@@ -19,6 +19,18 @@ export default function RootLayout(props: { children: ReactNode }) {
 
 	return (
 		<html lang="en" className="min-h-dvh">
+			<head>
+				<link
+					href="https://fonts.googleapis.com/css2?family=Konkhmer+Sleokchher&display=swap"
+					rel="stylesheet"
+				/>
+
+				<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
+				<link
+					href="https://fonts.googleapis.com/css2?family=Amatica+SC:wght@700&display=swap"
+					rel="stylesheet"
+				/>
+			</head>
 			<body className={`${inter.className} min-h-dvh`}>
 				{children}
 				<Suspense>

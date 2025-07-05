@@ -27,19 +27,32 @@ export function VariantSelector({
 					{variants.map((variant) => {
 						const isDisabled = !variant.quantityAvailable;
 						const isCurrentVariant = selectedVariant?.id === variant.id;
+
 						return (
 							<LinkWithChannel
 								key={variant.id}
 								prefetch={true}
 								scroll={false}
 								href={
-									isDisabled ? "#" : getHrefForVariant({ productSlug: product.slug, variantId: variant.id })
+									isDisabled
+										? "#"
+										: getHrefForVariant({
+												productSlug: product.slug,
+												variantId: variant.id,
+											})
 								}
 								className={clsx(
 									isCurrentVariant
-										? "border-transparent bg-neutral-900 text-white hover:bg-neutral-800"
-										: "border-neutral-200 bg-white text-neutral-900 hover:bg-neutral-100",
-									"relative flex min-w-[5ch] items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded border p-3 text-center text-sm font-semibold focus-within:outline focus-within:outline-2 aria-disabled:cursor-not-allowed aria-disabled:bg-neutral-100 aria-disabled:text-neutral-800 aria-disabled:opacity-50",
+										? "border-[#807C7C] bg-[#A0D4A3] text-black hover:bg-[#607e62]"
+										: "border-[#807C7C] bg-transparent text-neutral-900 hover:bg-neutral-200",
+
+									"h-[34px] w-[100px] sm:h-[48px] sm:w-[110px] md:h-[42px] md:w-[120px]",
+
+									"flex items-center justify-center",
+
+									"overflow-hidden text-ellipsis whitespace-nowrap rounded-full border text-center text-sm font-semibold",
+									// Accessibility and disabled states
+									"focus-within:outline focus-within:outline-2 aria-disabled:cursor-not-allowed aria-disabled:bg-neutral-100 aria-disabled:text-neutral-800 aria-disabled:opacity-50",
 									isDisabled && "pointer-events-none",
 								)}
 								role="radio"
@@ -47,7 +60,7 @@ export function VariantSelector({
 								aria-checked={isCurrentVariant}
 								aria-disabled={isDisabled}
 							>
-								{variant.name}
+								<span className="w-full truncate px-2 text-center">{variant.name}</span>
 							</LinkWithChannel>
 						);
 					})}

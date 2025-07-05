@@ -4,7 +4,9 @@ import { executeGraphQL } from "@/lib/graphql";
 import { Pagination } from "@/ui/components/Pagination";
 import { ProductList } from "@/ui/components/ProductList";
 import { ProductsPerPage } from "@/app/config";
-
+import Carousel from "@/ui/components/Carousel";
+import ShopPage from "@/ui/components/HomeContent/OutletSection";
+import YouTubeShortsCarousel from "@/ui/components/HomeContent/YoutubeShortsSection";
 export const metadata = {
 	title: "Products · Saleor Storefront example",
 	description: "All products in Saleor Storefront example",
@@ -38,16 +40,22 @@ export default async function Page(props: {
 	});
 
 	return (
-		<section className="mx-auto max-w-7xl p-8 pb-16">
-			<h2 className="sr-only">Product list</h2>
-			<ProductList products={products.edges.map((e) => e.node)} />
-			<Pagination
-				pageInfo={{
-					...products.pageInfo,
-					basePathname: `/products`,
-					urlSearchParams: newSearchParams,
-				}}
-			/>
-		</section>
+		<div className="bg-[#F3F0F0]">
+			{/* <Carousel /> */}
+
+			<section className="mx-auto max-w-7xl p-8 pb-16">
+				<h2 className="sr-only">Product list</h2>
+				<ProductList products={products.edges.map((e) => e.node)} />
+				<Pagination
+					pageInfo={{
+						...products.pageInfo,
+						basePathname: `/products`,
+						urlSearchParams: newSearchParams,
+					}}
+				/>
+			</section>
+			{/* <ShopPage />
+			<YouTubeShortsCarousel /> */}
+		</div>
 	);
 }

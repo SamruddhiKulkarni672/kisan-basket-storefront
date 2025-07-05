@@ -8,7 +8,6 @@ import useSelectedPathname from "@/hooks/useSelectedPathname";
 export function NavLink({ href, children }: { href: string; children: ReactElement | string }) {
 	const pathname = useSelectedPathname();
 	const isActive = pathname === href;
-
 	return (
 		<li className="inline-flex">
 			<LinkWithChannel

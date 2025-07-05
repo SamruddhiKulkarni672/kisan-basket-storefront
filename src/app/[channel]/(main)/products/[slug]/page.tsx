@@ -7,12 +7,14 @@ import { invariant } from "ts-invariant";
 import { type WithContext, type Product } from "schema-dts";
 import { AddButton } from "./AddButton";
 import { VariantSelector } from "@/ui/components/VariantSelector";
-import { ProductImageWrapper } from "@/ui/atoms/ProductImageWrapper";
 import { executeGraphQL } from "@/lib/graphql";
 import { formatMoney, formatMoneyRange } from "@/lib/utils";
 import { CheckoutAddLineDocument, ProductDetailsDocument, ProductListDocument } from "@/gql/graphql";
 import * as Checkout from "@/lib/checkout";
 import { AvailabilityMessage } from "@/ui/components/AvailabilityMessage";
+import { FaIndianRupeeSign } from "react-icons/fa6";
+
+import Image from "next/image";
 
 export async function generateMetadata(
 	props: {
@@ -78,6 +80,7 @@ export default async function Page(props: {
 	searchParams: Promise<{ variant?: string }>;
 }) {
 	const [searchParams, params] = await Promise.all([props.searchParams, props.params]);
+
 	const { product } = await executeGraphQL(ProductDetailsDocument, {
 		variables: {
 			slug: decodeURIComponent(params.slug),
@@ -90,7 +93,6 @@ export default async function Page(props: {
 		notFound();
 	}
 
-	const firstImage = product.thumbnail;
 	const description = product?.description ? parser.parse(JSON.parse(product?.description)) : null;
 
 	const variants = product.variants;
@@ -112,7 +114,6 @@ export default async function Page(props: {
 			return;
 		}
 
-		// TODO: error handling
 		await executeGraphQL(CheckoutAddLineDocument, {
 			variables: {
 				id: checkout.id,
@@ -154,7 +155,6 @@ export default async function Page(props: {
 				}
 			: {
 					name: product.name,
-
 					description: product.seoDescription || product.name,
 					offers: {
 						"@type": "AggregateOffer",
@@ -169,56 +169,102 @@ export default async function Page(props: {
 	};
 
 	return (
-		<section className="mx-auto grid max-w-7xl p-8">
+		<section className=" bg-[#EFEEEE]   p-8 md:px-[100px]">
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify(productJsonLd),
 				}}
 			/>
-			<form className="grid gap-2 sm:grid-cols-2 lg:grid-cols-8" action={addItem}>
-				<div className="md:col-span-1 lg:col-span-5">
-					{firstImage && (
-						<ProductImageWrapper
-							priority={true}
-							alt={firstImage.alt ?? ""}
-							width={1024}
-							height={1024}
-							src={firstImage.url}
-						/>
-					)}
+			<form className="grid grid-cols-1 gap-6 md:grid-cols-2" action={addItem}>
+				{/* Left: Product Image (Styled like reference) */}
+				<div className="flex items-center justify-center rounded-2xl bg-white p-8 shadow-xl">
+					<Image
+						src="/ac1968ee-a374-4adc-b962-c82ad31f40c9.png"
+						alt={product.name}
+						width={500}
+						height={500}
+						className="rounded-xl"
+						priority
+					/>
 				</div>
-				<div className="flex flex-col pt-6 sm:col-span-1 sm:px-6 sm:pt-0 lg:col-span-3 lg:pt-16">
-					<div>
-						<h1 className="mb-4 flex-auto text-3xl font-medium tracking-tight text-neutral-900">
-							{product?.name}
-						</h1>
-						<p className="mb-8 text-sm " data-testid="ProductElement_Price">
-							{price}
-						</p>
 
-						{variants && (
+				{/* Right: Product Details */}
+				<div className="flex flex-col justify-center px-6 py-0">
+					<h1 className="mb-2 text-2xl font-bold text-neutral-800">{product.name}</h1>
+					<div className="mt-2 flex items-center gap-1 text-sm leading-[1.2] text-[#81859C] line-through sm:text-base">
+						<FaIndianRupeeSign />
+						500
+					</div>
+					<p className="mt-2  text-lg font-bold text-neutral-900">{price}</p>
+
+					{description && (
+						<>
+							<h2 className="text-md  mt-4   font-bold text-neutral-900">Description</h2>
+
+							<div className="mt-2 space-y-4 text-sm text-neutral-600">
+								{description.map((content) => (
+									<div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
+								))}
+							</div>
+						</>
+					)}
+
+					{variants && (
+						<div className="mb-4">
+							<h2 className="text-md mb mt-2 font-bold text-neutral-900">Size</h2>
 							<VariantSelector
 								selectedVariant={selectedVariant}
 								variants={variants}
 								product={product}
 								channel={params.channel}
 							/>
-						)}
-						<AvailabilityMessage isAvailable={isAvailable} />
-						<div className="mt-8">
-							<AddButton disabled={!selectedVariantID || !selectedVariant?.quantityAvailable} />
 						</div>
-						{description && (
-							<div className="mt-8 space-y-6 text-sm text-neutral-500">
-								{description.map((content) => (
-									<div key={content} dangerouslySetInnerHTML={{ __html: xss(content) }} />
-								))}
-							</div>
-						)}
+					)}
+
+					{/* Quantity Selector */}
+					<h2 className="text-md mb mt-2 font-bold text-neutral-900">Quantity</h2>
+
+					<div
+						className="mt-2 flex w-[120px] items-center justify-between  rounded-full  bg-white px-4 py-2  "
+						style={{
+							boxShadow: "5px 7px 8.8px 2px #615A5A40",
+						}}
+					>
+						<button type="button" className="text-lg font-bold text-neutral-700 transition hover:scale-105">
+							−
+						</button>
+						<span className="text-base font-medium text-neutral-800">1</span>
+						<button type="button" className="text-lg font-bold text-neutral-700 transition hover:scale-105">
+							+
+						</button>
+					</div>
+
+					<AvailabilityMessage isAvailable={isAvailable} />
+
+					<div className="mt-6">
+						<AddButton disabled={!selectedVariantID || !selectedVariant?.quantityAvailable} />
 					</div>
 				</div>
 			</form>
+
+			<div
+				className="mx-auto my-2 w-full   rounded-3xl border-4 border-[#f5f2f2] bg-[#C0D1D0] px-4 py-6 shadow-md sm:my-3 sm:px-6 sm:py-8 md:my-4 md:px-10 md:py-10 lg:my-6 lg:px-24"
+				style={{
+					boxShadow: "5px 7px 8.8px 2px #615A5A40",
+				}}
+			>
+				<h3 className="mb-4 text-base font-semibold text-gray-800 sm:text-lg md:text-xl">Features</h3>
+				<ul className="list-inside list-disc space-y-2 text-sm text-gray-800 sm:text-base md:text-lg">
+					<li>Made from ancient Khapli (Emmer) wheat – a heritage grain</li>
+					<li>Low in gluten – easy to digest and gut-friendly</li>
+					<li>Diabetic-friendly – low glycemic index</li>
+					<li>Rich in fiber, protein, iron, and B-vitamins</li>
+					<li>Makes soft, flavorful rotis with a nutty aroma</li>
+					<li>No chemicals or preservatives</li>
+					<li>100% natural and organically grown</li>
+				</ul>
+			</div>
 		</section>
 	);
 }

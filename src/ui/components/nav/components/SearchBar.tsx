@@ -8,6 +8,7 @@ export const SearchBar = ({ channel }: { channel: string }) => {
 		if (search && search.trim().length > 0) {
 			redirect(`/${encodeURIComponent(channel)}/search?query=${encodeURIComponent(search)}`);
 		}
+		console.log("seaarch", search);
 	}
 
 	return (

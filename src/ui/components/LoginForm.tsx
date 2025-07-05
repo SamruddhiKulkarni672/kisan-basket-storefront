@@ -1,63 +1,61 @@
-import { getServerAuthClient } from "@/app/config";
+"use client";
 
-export async function LoginForm() {
+import React from "react";
+import Image from "next/image";
+import { loginAction } from "./LoginAction";
+import { useFormState } from "react-dom";
+import login from "../../../public/images/login.svg";
+const initialState = {
+	message: "",
+	fieldErrors: {
+		email: "",
+		password: "",
+	},
+};
+
+export function LoginForm() {
+	const [formState, action] = useFormState(loginAction, initialState);
+
 	return (
-		<div className="mx-auto mt-16 w-full max-w-lg">
-			<form
-				className="rounded border p-8 shadow-md"
-				action={async (formData) => {
-					"use server";
+		<div className="mx-auto mt-12 w-full max-w-lg shadow-lg">
+			<form className="rounded border p-8 shadow-md" action={action}>
+				<Image src={login} alt="Login" className="mb-6 h-52 w-full object-contain" />
 
-					const email = formData.get("email")?.toString();
-					const password = formData.get("password")?.toString();
-
-					if (!email || !password) {
-						throw new Error("Email and password are required");
-					}
-
-					const { data } = await (
-						await getServerAuthClient()
-					).signIn({ email, password }, { cache: "no-store" });
-
-					if (data.tokenCreate.errors.length > 0) {
-						// setErrors(data.tokenCreate.errors.map((error) => error.message));
-						// setFormValues(DefaultValues);
-					}
-				}}
-			>
-				<div className="mb-2">
-					<label className="sr-only" htmlFor="email">
-						Email
-					</label>
+				<div className="mb-4">
 					<input
 						type="email"
 						name="email"
 						placeholder="Email"
 						className="w-full rounded border bg-neutral-50 px-4 py-2"
 					/>
+					{formState.fieldErrors.email && (
+						<p className="text-sm text-red-600">{formState.fieldErrors.email}</p>
+					)}
 				</div>
 				<div className="mb-4">
-					<label className="sr-only" htmlFor="password">
-						Password
-					</label>
 					<input
 						type="password"
 						name="password"
 						placeholder="Password"
-						autoCapitalize="off"
 						autoComplete="off"
 						className="w-full rounded border bg-neutral-50 px-4 py-2"
 					/>
+					{formState.fieldErrors.password && (
+						<p className="text-sm text-red-600">{formState.fieldErrors.password}</p>
+					)}
 				</div>
 
-				<button
-					className="rounded bg-neutral-800 px-4 py-2 text-neutral-200 hover:bg-neutral-700"
-					type="submit"
-				>
-					Log In
-				</button>
+				{formState.message && <p className="mb-4 text-center text-sm text-red-600">{formState.message}</p>}
+
+				<div className="flex w-full items-center justify-center">
+					<button
+						className="w-full rounded bg-[#646A36] px-4 py-2 text-neutral-200 hover:bg-neutral-700"
+						type="submit"
+					>
+						Log In
+					</button>
+				</div>
 			</form>
-			<div></div>
 		</div>
 	);
 }

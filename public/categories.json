@@ -1,0 +1,39 @@
+import category1Img from "../public/images/category1.svg";
+import category2Img from "../public/images/category2.svg";
+import category3Img from "../public/images/category3.svg";
+import category4Img from "../public/images/category4.svg";
+
+const categories = [
+  {
+    id: 1,
+    name: "Vegetables",
+    image: category1Img,
+  },
+  {
+    id: 2,
+    name: "Fruits",
+    image: category2Img,
+  },
+  {
+    id: 3,
+    name: "Dairy",
+    image: category3Img,
+  },
+  {
+    id: 4,
+    name: "Snacks",
+    image: category4Img,
+  },
+  {
+    id: 5,
+    name: "Beverages",
+    image: category1Img,
+  },
+  {
+    id: 6,
+    name: "Bakery",
+    image: category2Img,
+  },
+];
+
+export default categories;
